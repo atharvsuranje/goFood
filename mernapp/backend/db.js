@@ -7,10 +7,10 @@ const mongoDB = async () => {
     await mongoose.connect(mongoURI, {useNewUrlParser: true,useUnifiedTopology: true});
     console.log('Connected Done');
     const foodItemsCollection =  mongoose.connection.db.collection("food_items");
-    global.food_items = await foodItemsCollection.find({}).toArray();;
+    global.food_items = await foodItemsCollection.find({}).toArray();
     const foodCategoryCollection =  mongoose.connection.db.collection("foodCategory");
-    global.catData = await foodCategoryCollection.find({}).toArray();;
-
+    global.foodCategory = await foodCategoryCollection.find({}).toArray();
+    
   } catch (err) {
     console.log('Some Error:', err);
   }
