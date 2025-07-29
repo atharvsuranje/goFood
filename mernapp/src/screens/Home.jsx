@@ -1,37 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
-import { useState,useEffect} from "react";
 
 const Home = () => {
-  
   const [foodItem, setFoodItem] = useState([]);
   const [foodCat, setFoodCat] = useState([]);
-  const [search, setSearch] = useState('')
-  
-  useEffect(()=>{
-      loadData()
-    },[])
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
   const loadData = async () => {
-    let response = await fetch("http://localhost:5000/api/foodData",{
-      method:"POST",
-      headers :{
-        'Content-Type':'application.json'
-      }
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/foodData", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json' // ✅ fixed typo
+        }
+      });
 
-    response = await response.json();
-    // console.log(response[0],response[1]);
-    setFoodItem(response[0]);
-    setFoodCat(response[1]);
-
-    
-  }
+      const data = await res.json(); // ✅ separate variable, no reassignment
+      setFoodItem(data[0]);
+      setFoodCat(data[1]);
+    } catch (err) {
+      console.error("Error fetching food data:", err);
+    }
+  };
 
   return (
     <div>
-      <div><Navbar /></div>
+      <Navbar />
+
+      {/* Carousel */}
       <div
         id="carouselExampleFade"
         className="carousel slide carousel-fade"
@@ -46,14 +48,9 @@ const Home = () => {
                 type="search"
                 placeholder="Search"
                 aria-label="Search"
-                value={search} onChange={(e) => {setSearch(e.target.value)}}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
-              {/* <button
-                className="btn btn-outline-success text-white bg-success"
-                type="submit"
-              >
-                Search
-              </button> */}
             </div>
           </div>
           <div className="carousel-item active">
@@ -81,16 +78,15 @@ const Home = () => {
             />
           </div>
         </div>
+
+        {/* Carousel buttons */}
         <button
           className="carousel-control-prev"
           type="button"
           data-bs-target="#carouselExampleFade"
           data-bs-slide="prev"
         >
-          <span
-            className="carousel-control-prev-icon"
-            aria-hidden="true"
-          ></span>
+          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
           <span className="visually-hidden">Previous</span>
         </button>
         <button
@@ -99,43 +95,47 @@ const Home = () => {
           data-bs-target="#carouselExampleFade"
           data-bs-slide="next"
         >
-          <span
-            className="carousel-control-next-icon"
-            aria-hidden="true"
-          ></span>
+          <span className="carousel-control-next-icon" aria-hidden="true"></span>
           <span className="visually-hidden">Next</span>
         </button>
       </div>
+
+      {/* Food Categories and Cards */}
       <div className="container">
-        {
-          foodCat !==[] 
-          ? foodCat.map((data) => {
-            return (
-              <div className="row mb-3">
-                <div key={data._id} className="fs-3 m-3">
-                  {data.CategoryName}
-                </div>
-                <hr />
-                {foodItem !== [] 
-                ? 
-                foodItem.filter((item) => (item.CategoryName === data.CategoryName) && (item.name.toLowerCase().includes(search.toLowerCase())) ) 
-                .map(filterItems =>{
-                  return (
-                    <div key={filterItems._id} className="col-12 col-md-6 col-lg-3">
-                      <Card foodName={filterItems.name}
-                      options={filterItems.options[0]}
-                      imgSrc ={filterItems.img}
-                      ></Card>
-                    </div>
+        {foodCat.length > 0 ? (
+          foodCat.map((data) => (
+            <div key={data._id} className="row mb-3">
+              <div className="fs-3 m-3">{data.CategoryName}</div>
+              <hr />
+              {foodItem.length > 0 ? (
+                foodItem
+                  .filter(
+                    (item) =>
+                      item.CategoryName === data.CategoryName &&
+                      item.name.toLowerCase().includes(search.toLowerCase())
                   )
-                })
-                : <div>No such Data </div>}
-              </div>
-            )
-          }) : ""
-        }
+                  .map((filterItem) => (
+                    <div
+                      key={filterItem._id}
+                      className="col-12 col-md-6 col-lg-3"
+                    >
+                      <Card
+                        foodItem={filterItem}
+                        options={filterItem.options[0]}
+                      />
+                    </div>
+                  ))
+              ) : (
+                <div>No such Data</div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div>Loading Categories...</div>
+        )}
       </div>
-      <div><Footer /></div>
+
+      <Footer />
     </div>
   );
 };
