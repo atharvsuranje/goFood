@@ -16,9 +16,10 @@ app.use((req,res,next)=>{
 app.use(express.json())
 app.use('/api', require("./Routes/createUser"));
 app.use('/api', require("./Routes/displayData"));
+app.use('/api', require("./Routes/orderData"));
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`GoFood app listening on port ${port}`)
 })
