@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from './screens/Login.jsx';
 import Signup from './screens/Signup.jsx';
 import { CartProvider } from './components/ContextReducer.jsx';
+import MyOrder from './screens/MyOrder.jsx';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route exact path="/" element={<Home/>} />
           <Route exact path="/login" element={<Login/>} />
           <Route exact path="/createuser" element={<Signup/>} />
+          <Route exact path="/myOrder" element={<MyOrder/>} />
         </Routes>
     </Router>
     </CartProvider>
